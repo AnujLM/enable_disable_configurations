@@ -15,9 +15,10 @@ Future<void> main(List<String> arguments) async {
       // await enableProfileMetadata(accessToken);
       // await enableTopResponse(accessToken);
       // await enableUserTopic(accessToken);
-      // await addParentTopics(accessToken);
-      //TODO: change the parameters to the actual values return in addParentTopics
-      // await addChildTopics(accessToken, "countriesId", "interestsId");
+      final parentTopicIds = await addParentTopics(accessToken);
+      print("parentTopicIds: $parentTopicIds");
+      await addChildTopics(
+          accessToken, parentTopicIds.first, parentTopicIds.last);
       // await enableWidgetsMetadata(accessToken);
     }
   });

@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:enable_disable_configurations/constants.dart';
 
-//TODO: add List<String> parentTopics as response in this function so that we can use it for setting up the child topics
-Future<void> addParentTopics(String accessToken) async {
+Future<List<String>> addParentTopics(String accessToken) async {
   var headers = {
     "Authorization": accessToken,
     "x-platform-code": "fl",
@@ -12,19 +11,13 @@ Future<void> addParentTopics(String accessToken) async {
     "x-sdk-source": "feed",
     "Content-Type": "application/json"
   };
-  var data = json.encode({
+  var data = {
     "topics": [
       {
-        "all_parent_ids": null,
-        "is_enabled": true,
         "is_searchable": false,
         "level": 0,
         "name": "Countries",
-        "number_of_posts": 0,
-        "parent_id": "",
-        "parent_name": "",
         "priority": 1,
-        "total_child_count": 12,
         "metadata": {
           "cover_image": "",
           "description": "Which countries you are planning to visit?",
@@ -33,16 +26,10 @@ Future<void> addParentTopics(String accessToken) async {
         }
       },
       {
-        "all_parent_ids": null,
-        "is_enabled": true,
         "is_searchable": false,
         "level": 0,
         "name": "Interests",
-        "number_of_posts": 1,
-        "parent_id": "",
-        "parent_name": "",
         "priority": 0.5,
-        "total_child_count": 8,
         "metadata": {
           "cover_image": "",
           "description": "Select the topics that interest you",
@@ -51,7 +38,7 @@ Future<void> addParentTopics(String accessToken) async {
         }
       }
     ]
-  });
+  };
   var dio = Dio();
   try {
     var response = await dio.request(
@@ -65,11 +52,18 @@ Future<void> addParentTopics(String accessToken) async {
     print('-----------------Add Parent Topics-----------------');
 
     if (response.statusCode == 200) {
+      final List<String> parentTopics = [];
+      for (var topic in response.data['data']['topics']) {
+        parentTopics.add(topic['_id']);
+      }
       print(json.encode(response.data));
+      return parentTopics;
     } else {
       print(response.statusMessage);
+      return [];
     }
   } catch (e) {
     print('Error: $e');
+    return [];
   }
 }
